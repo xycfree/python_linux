@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 from PIL import Image
 import traceback
-import python_getpic
+from identfying_code_recognize import python_getpic
 import os
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+
 
 # 竖直模板库
 # 前四个为数字的特征向量，最后一个数字为该数字

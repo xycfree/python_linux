@@ -5,8 +5,6 @@
 
 import os
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 # 程序文件主目录
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

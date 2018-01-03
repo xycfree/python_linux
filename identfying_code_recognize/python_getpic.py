@@ -4,8 +4,7 @@ import requests
 import os
 import sys
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+
 # 此处路径自己修改，
 path = 'D:\code\imgs\\'
 num = 10
