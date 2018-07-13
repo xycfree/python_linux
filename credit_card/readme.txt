@@ -179,7 +179,7 @@
    3、定义动态方法db_load(self.dict_user = dbapi.load_data_from_db(self.__database)),即调用dbapi模块中的load_data_from_db方法来展示用户信息
    4、定义login函数，输入用户名和密码
        （1）、调用user_exists，判断用户是否存在，不存在则使用common.show_message进行异常颜色输出。
-       （2）、如存在则调用 用户登录模块_user_login ,首先对输入的密码参数进行md5计算_password = common.encrypt(password)，调用common模块中的encrypt函数，并进行用户信息的判断的赋值
+       （2）、如存在则调用 用户登录模块_user_login ,首先对输入的密码参数进行md5计算_password = common.en_crypt(password)，调用common模块中的encrypt函数，并进行用户信息的判断的赋值
        （3）、判断是否用户被锁定
        （4）、判断用户是否登录成功，成功则break退出，失败则输出异常信息
        （5）、连续三次登录失败，则设置用户锁定标识为1，并update_user更新到user.db
@@ -482,7 +482,7 @@ def card_center(userobj):
                 card = CreditCard(cardno)
                 if card.card_is_exists:
                     pwd = input("请输入密码:")
-                    if common.encrypt(pwd) == card.password:
+                    if common.en_crypt(pwd) == card.password:
                         common.show_message("登录成功", "NOTICE")
                         input_flag = True
                         continue
@@ -1083,7 +1083,7 @@ def init_db_users():
             # 获得用户设置的密码
             tmppassword = _user_list[k]['password']
             # 对密码进行加密
-            encrypassword = common.encrypt(tmppassword)
+            encrypassword = common.en_crypt(tmppassword)
             # 修改明文密码
             _user_list[k]['password'] = encrypassword
         fu.write(json.dumps(_user_list))
@@ -1095,7 +1095,7 @@ def init_db_creditcard():
     with open(_db_file, "w+") as fc:
         for k, v in _creditcard_list.items():
             tmppassword = _creditcard_list[k]['password']
-            encrypassword = common.encrypt(tmppassword)
+            encrypassword = common.en_crypt(tmppassword)
             _creditcard_list[k]['password'] = encrypassword
         fc.write(json.dumps(_creditcard_list))
 
@@ -1310,7 +1310,7 @@ def verification_code():
     return result
 
 
-def encrypt(string):
+def en_crypt(string):
     """
     字符串加密函数
     :param string: 待加密的字符串
@@ -1496,7 +1496,7 @@ class Users(object):
         :return:
         """
         # 对输入的密码加密
-        _password = common.encrypt(password)
+        _password = common.en_crypt(password)
 
         for user, details in self.dict_user.items():
             # 找到用户名
@@ -1570,7 +1570,7 @@ class Users(object):
         """
         try:
             '''
-            _password = common.encrypt(self.password)
+            _password = common.en_crypt(self.password)
             self.dict_user[self.username]["password"] = _password
             self.dict_user[self.username]["islocked"] = self.islocked
             self.dict_user[self.username]["name"] = self.name
@@ -1602,7 +1602,7 @@ class Users(object):
         新创建一个用户,将用户数据同步写入到数据库文件
         :return:
         """
-        self.dict_user[self.username] = dict(password=common.encrypt(self.password),
+        self.dict_user[self.username] = dict(password=common.en_crypt(self.password),
                                              name=self.name,
                                              mobile=self.mobile,
                                              bindcard=self.bindcard,
@@ -1720,7 +1720,7 @@ class Users(object):
                     continue
                 _not_null_flag = True
             self.password = _new_password
-            _password = common.encrypt(self.password)
+            _password = common.en_crypt(self.password)
             self.dict_user[self.username]["password"] = _password
             self.update_user()
             common.show_message("密码修改成功!", "INFORMATIOM")
@@ -2052,7 +2052,7 @@ class CreditCard(object):
         新发行一张行用卡
         :return:
         """
-        password = common.encrypt(self.password)
+        password = common.en_crypt(self.password)
         self.credit_card[self.cardno] = dict(password=password,
                                              credit_total=self.credit_total,
                                              credit_balance=self.credit_balance,
@@ -2062,7 +2062,7 @@ class CreditCard(object):
         dbapi.write_db_json(self.credit_card, self.__database)
 
     def update_card(self):
-        password = common.encrypt(self.password)
+        password = common.en_crypt(self.password)
         self.credit_card[self.cardno]["password"] = password
         self.credit_card[self.cardno]["owner"] = self.owner
         self.credit_card[self.cardno]["credit_total"] = self.credit_total
@@ -2082,7 +2082,7 @@ class CreditCard(object):
         # 提现金额及手续费和大于余额,
         if totalfee > self.credit_balance:
             return errorcode.BALANCE_NOT_ENOUGHT
-        elif common.encrypt(password) != self.password:
+        elif common.en_crypt(password) != self.password:
             return errorcode.CARD_PASS_ERROR
         else:
             return errorcode.NO_ERROR
